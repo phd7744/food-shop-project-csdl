@@ -23,7 +23,7 @@ export default function Navbar() {
   // const classNameTextChoose = openMenu ? "text-blue-200 " : null
 
   return (
-    <section className="px-6 py-6 w-72 bg-amber-200 min-h-screen fixed left-0 top-0">
+    <section className="px-6 py-6 w-72 bg-white min-h-screen fixed left-0 top-0">
       <Link to='/' className="space-y-6">
         <div className="flex justify-baseline items-center">
           <img src={logoHome} alt="Logo Home" className="w-10 h-10" />

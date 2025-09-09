@@ -14,7 +14,7 @@ const values = [
 
 export default function DashBoard() {
   return (
-    <section className="bg-gray-100 p-6 space-y-6">
+    <section className="bg-gray-100  space-y-6">
       <div className="grid grid-cols-4 gap-6">
         {values.map((v, index) => (
           <StatsCard
