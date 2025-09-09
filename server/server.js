@@ -6,8 +6,11 @@ app.use(express.json());
 app.use(cors());
 
 const foodRouter = require('./router/foods.js');
+const accountRoutre = require('./router/account.js');
 
 app.use('/foods',foodRouter);
+app.use('/account',accountRoutre);
+
 
 
 

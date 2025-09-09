@@ -24,13 +24,13 @@ export default function Navbar() {
 
   return (
     <section className="px-6 py-6 w-72 bg-white min-h-screen fixed left-0 top-0">
-      <Link to='/' className="space-y-6">
+      <Link to='/dashboard' className="space-y-6">
         <div className="flex justify-baseline items-center">
           <img src={logoHome} alt="Logo Home" className="w-10 h-10" />
           <h1 className="font-bold text-2xl">Food App</h1>
         </div>
         <Link
-          to="/"
+          to="/dashboard"
           className="flex space-x-3 items-center p-2 rounded-lg hover:bg-gray-300"
         >
           <img src={homeImg} alt="Home Icon" className="w-7 h-7" />
@@ -50,16 +50,16 @@ export default function Navbar() {
             />
           </div>
           {openDropdown == "menu" && (
-            <div className="ml-10 mt-2 space-y-2 text-sm text-gray-700">
-              <button className="block w-full text-left hover:text-gray-900">
-                <span>Add Menu</span>
-              </button>
+            <div className="ml-7 mt-2 space-y-4 text-sm text-gray-700">
               <Link
                 to="/menu"
-                className="block w-full text-left hover:text-gray-900"
+                className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300"
               >
-                List Menu
+                <span className="m-5">List Menu</span>
               </Link>
+              <button className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+                <span className="m-5">Add Menu</span>
+              </button>
             </div>
           )}
         </div>
@@ -78,15 +78,15 @@ export default function Navbar() {
           </div>
           {openDropdown == "order" && (
             <div className="ml-10 mt-2 space-y-2 text-sm text-gray-700">
-              <button className="block w-full text-left hover:text-gray-900">
-                <span>Add Order</span>
-              </button>
               <Link
                 to="/orders"
-                className="block w-full text-left hover:text-gray-900"
+                className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300"
               >
-                List Order
+                <span className="m-5">List Order</span>
               </Link>
+              <button className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+                <span className="m-5">Add Order</span>
+              </button>
             </div>
           )}
         </div>
