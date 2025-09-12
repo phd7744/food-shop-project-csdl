@@ -5,6 +5,9 @@ import Menu from "./components/Menu/Menu.jsx";
 import Layout from "./components/Layout/Layout";
 import Customers from "./components/Customer/Customers.jsx";
 import Login from "./components/Login/Login.jsx";
+import AddFood from "./components/Menu/AddFood.jsx";
+import OrderDetail from "./components/Orders/OrderDetail.jsx";
+import AddOrder from "./components/Orders/AddOrder.jsx";
 
 function App() {
   return (
@@ -12,11 +15,13 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<Layout/>}>
-          <Route path="/dashboard" element={<DashBoard />} />
+          <Route path="/" element={<DashBoard />} />
           <Route path="/menu" element={<Menu/>} />
+          <Route path="/addfood" element={<AddFood/>} />
           <Route path="/orders" element={<Order/>} />
+          <Route path="/orderdetail" element={<OrderDetail/>} />
+          <Route path="/addorder" element={<AddOrder/>} />
           <Route path="/customers" element={<Customers />} />
-          <Route path="/login" element={<Customers />} />
         </Route>
       </Routes>
     </BrowserRouter>

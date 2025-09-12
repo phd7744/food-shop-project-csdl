@@ -20,7 +20,7 @@ export default function Login() {
 
     if (reponse.ok) {
       console.log("Login Success");
-      navigate("/dashboard");
+      navigate("/");
 
     } else {
       console.log("Login Fail");

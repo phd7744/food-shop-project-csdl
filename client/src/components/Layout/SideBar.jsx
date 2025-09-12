@@ -24,13 +24,13 @@ export default function Navbar() {
 
   return (
     <section className="px-6 py-6 w-72 bg-white min-h-screen fixed left-0 top-0">
-      <Link to='/dashboard' className="space-y-6">
+      <div to='/' className="space-y-6">
         <div className="flex justify-baseline items-center">
           <img src={logoHome} alt="Logo Home" className="w-10 h-10" />
           <h1 className="font-bold text-2xl">Food App</h1>
         </div>
         <Link
-          to="/dashboard"
+          to="/"
           className="flex space-x-3 items-center p-2 rounded-lg hover:bg-gray-300"
         >
           <img src={homeImg} alt="Home Icon" className="w-7 h-7" />
@@ -57,9 +57,9 @@ export default function Navbar() {
               >
                 <span className="m-5">List Menu</span>
               </Link>
-              <button className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+              <Link to="/addfood" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
                 <span className="m-5">Add Menu</span>
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -84,9 +84,12 @@ export default function Navbar() {
               >
                 <span className="m-5">List Order</span>
               </Link>
-              <button className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+              <Link to="/orderdetail" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+                <span className="m-5">Order Details</span>
+              </Link>
+              <Link to="/addorder" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
                 <span className="m-5">Add Order</span>
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -100,7 +103,7 @@ export default function Navbar() {
           <img src={logoutIcon} alt="Home Icon" className="w-7 h-7" />
           <span>Logout</span>
         </Link>
-      </Link>
+      </div>
     </section>
   );
 }

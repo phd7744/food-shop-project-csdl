@@ -6,10 +6,12 @@ app.use(express.json());
 app.use(cors());
 
 const foodRouter = require('./router/foods.js');
-const accountRoutre = require('./router/account.js');
+const accountRouter = require('./router/account.js');
+const categoriesRouter = require('./router/categories.js');
 
 app.use('/foods',foodRouter);
-app.use('/account',accountRoutre);
+app.use('/account',accountRouter);
+app.use('/category',categoriesRouter);
 
 
 
