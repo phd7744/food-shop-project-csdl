@@ -4,24 +4,47 @@ import downloadIcon from "../../assets/img_menu/download.png";
 import addIcon from "../../assets/img_menu/plus.png";
 import searchIcon from "../../assets/img_navbar/loupe.png";
 import { useNavigate } from "react-router-dom";
-import { fetchFoods } from "../../api/foodApi";
+import { fetchFoods, delFood } from "../../api/foodApi";
 export default function Menu() {
   const [foodList, setFoodList] = useState([]);
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
   const itemsPerPage = 7;
 
+  async function fetchData() {
+    const data = await fetchFoods();
+    setFoodList(data);
+  }
+
   useEffect(() => {
-    async function fetchData() {
-      const data = await fetchFoods();
-      setFoodList(data);
-    }
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  async function handleDeleteFood(e, id) {
+    e.preventDefault();
+    try {
+      const result = await delFood(id);
+      console.log("Food Delete:", result);
+      alert("Xóa món thành công!");
+      fetchData()
+    } catch (error) {
+      console.error(error);
+      alert("Xóa món thất bại!");
+    }
+  }
+
+  const filteredFoods = foodList.filter((food) =>
+    food.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentFoods = foodList.slice(indexOfFirst, indexOfLast);
+  const currentFoods = filteredFoods.slice(indexOfFirst, indexOfLast);
 
   return (
     <section>
@@ -46,6 +69,8 @@ export default function Menu() {
                 className="w-5 h-5 text-gray-500"
               />
               <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 type="text"
                 placeholder="Search"
                 className="ml-2 flex-1 outline-none text-gray-700 placeholder-gray-400"
@@ -99,8 +124,15 @@ export default function Menu() {
                   food.is_available === 1 ? "In Stock" : "Out Of Stock";
                 return (
                   <tr key={food.food_id} className="border-b hover:bg-gray-50 ">
-                    <td className="px-10 py-10">{food.name}</td>
-                    <td className="px-10 py-10">{food.category_id}</td>
+                    <td className="px-10 py-10 flex gap-3 items-center">
+                      <img
+                        src={food.img_url}
+                        alt="Food Image"
+                        className="w-16 h-16 object-contain bg-gray-100 rounded"
+                      />
+                      <span>{food.name}</span>
+                    </td>
+                    <td className="px-10 py-10">{food.category_name}</td>
                     <td className="px-10 py-10">{food.price}</td>
                     <td className="px-10 py-10">
                       <span
@@ -113,7 +145,10 @@ export default function Menu() {
                       {new Date(food.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-10 py-10">
-                      <button className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm">
+                      <button
+                        onClick={(e) => handleDeleteFood(e, food.food_id)}
+                        className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm"
+                      >
                         DELETE
                       </button>
                     </td>

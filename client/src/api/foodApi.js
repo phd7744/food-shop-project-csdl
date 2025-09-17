@@ -16,6 +16,8 @@ export async function toBase64(file) {
   return base64;
 }
 
+
+
 export async function addFood(data) {
   const response = await fetch(`${API_URL}/addfood`, {
     method : "POST",
@@ -30,3 +32,18 @@ export async function addFood(data) {
     throw new Error("Add Food Failed");
   }
 }
+
+export async function delFood(id) {
+  try {
+    const response = await fetch(`${API_URL}/delfood/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return await response.json();
+  } catch (err) {
+    console.error("Error deleting food:", err);
+    throw err; 
+  }
+}
+

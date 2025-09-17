@@ -3,7 +3,11 @@ const router = express.Router();
 const connection = require("../db.js");
 
 router.get("/", (req, res) => {
-  const querySelect = "SELECT * FROM foods";
+  const querySelect = `
+    SELECT foods.*, categories.name AS category_name 
+    FROM foods 
+    JOIN categories on foods.category_id = categories.category_id
+  `;
   connection.query(querySelect, (err, result) => {
     if (err) {
       console.log("Select Food Fail");
@@ -55,5 +59,23 @@ router.post("/addfood", (req, res) => {
     });
   });
 });
+
+  router.delete("/delfood/:id", (req, res) => {
+  const id = req.params.id;
+  const foodDel = `DELETE FROM foods WHERE food_id = ?`;
+  connection.query(foodDel, [id], (err, result) => {
+    if (err) {
+      console.error("Delete food Fail", err);
+      return res.status(500).json({ error: "Fail to delete food" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Food not found" });
+    }
+
+    return res.status(200).json({ message: "Delete food success" });
+  });
+});
+
+
 
 module.exports = router;
