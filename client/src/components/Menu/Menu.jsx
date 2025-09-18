@@ -3,7 +3,7 @@ import Pagination from "../Pagination/Pagination";
 import downloadIcon from "../../assets/img_menu/download.png";
 import addIcon from "../../assets/img_menu/plus.png";
 import searchIcon from "../../assets/img_navbar/loupe.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { fetchFoods, delFood } from "../../api/foodApi";
 export default function Menu() {
   const [foodList, setFoodList] = useState([]);
@@ -130,7 +130,7 @@ export default function Menu() {
                         alt="Food Image"
                         className="w-16 h-16 object-contain bg-gray-100 rounded"
                       />
-                      <span>{food.name}</span>
+                      <Link to={`/fooddetail/${food.food_id}`}>{food.name}</Link>
                     </td>
                     <td className="px-10 py-10">{food.category_name}</td>
                     <td className="px-10 py-10">{food.price}</td>

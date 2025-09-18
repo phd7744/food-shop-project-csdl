@@ -18,6 +18,30 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const querySelectById = `
+    SELECT f.*, c.category_id, c.name AS category_name
+    FROM foods f
+    JOIN categories c ON f.category_id = c.category_id
+    WHERE f.food_id = ?`;
+
+  connection.query(querySelectById, [id], (err, result) => {
+    if (err) {
+      console.log("get food by id fail", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Food not found" });
+    }
+
+    return res.status(200).json(result[0]);
+  });
+});
+
+
+
 router.post("/addfood", (req, res) => {
   let {
     category_id,
@@ -75,6 +99,32 @@ router.post("/addfood", (req, res) => {
     return res.status(200).json({ message: "Delete food success" });
   });
 });
+
+router.put('/updfood/:id', (req, res) => {
+  const { id } = req.params;
+  const { category_id, name, price, description, is_available, img_url } = req.body;
+
+  const value = [category_id, name, price, description, is_available, img_url, id];
+  const queryUpdate = `
+    UPDATE foods 
+    SET category_id = ?, name = ?, price = ?, description = ?, is_available = ?, img_url = ?
+    WHERE food_id = ? 
+  `;
+
+  connection.query(queryUpdate, value, (err, result) => {
+    if (err) {
+      console.error("Update Food Fail", err);
+      return res.status(500).json({ error: "Update Food Fail" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Food not found" });
+    }
+
+    return res.status(200).json({ message: "Update food success" });
+  });
+});
+
 
 
 

@@ -33,6 +33,12 @@ export async function addFood(data) {
   }
 }
 
+export async function getFoodById(id) {
+    const response = await fetch (`${API_URL}/${id}`);
+    const data = await response.json();
+    return data;
+}
+
 export async function delFood(id) {
   try {
     const response = await fetch(`${API_URL}/delfood/${id}`, {
@@ -44,6 +50,25 @@ export async function delFood(id) {
   } catch (err) {
     console.error("Error deleting food:", err);
     throw err; 
+  }
+}
+
+export async function updateFood(id, data) {
+  try {
+    const response = await fetch(`${API_URL}/updfood/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Update Food Failed");
+    }
+
+    return await response.json();
+  } catch (err) {
+    console.error("Error updating food:", err);
+    throw err;
   }
 }
 
