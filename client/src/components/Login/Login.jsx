@@ -1,7 +1,7 @@
 import userLoginIcon from "../../assets/img_navbar/user-login.png";
 import passwordIcon from "../../assets/img_navbar/padlock.png";
 import loginIcon from "../../assets/img_navbar/login.png";
-import { use, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {

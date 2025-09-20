@@ -8,7 +8,7 @@ import Customers from "./components/Customer/Customers.jsx";
 import Login from "./components/Login/Login.jsx";
 import AddFood from "./components/Menu/AddFood.jsx";
 import OrderDetail from "./components/Orders/OrderDetail.jsx";
-import AddOrder from "./components/Orders/AddOrder.jsx";
+import CreateOrder from "./components/Orders/CreateOrder.jsx";
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
           <Route path="/addfood" element={<AddFood/>} />
           <Route path="/orders" element={<Order/>} />
           <Route path="/orderdetail" element={<OrderDetail/>} />
-          <Route path="/addorder" element={<AddOrder/>} />
+          <Route path="/createorder" element={<CreateOrder/>} />
           <Route path="/customers" element={<Customers />} />
         </Route>
       </Routes>

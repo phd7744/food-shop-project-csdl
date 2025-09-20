@@ -2,18 +2,21 @@ import { useEffect, useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import downloadIcon from "../../assets/img_menu/download.png";
 import searchIcon from "../../assets/img_navbar/loupe.png";
-import { fetchOrder } from "../../api/orderApi";
+import { delOrderById, fetchOrder } from "../../api/orderApi";
+import { Link } from "react-router-dom";
 export default function Orders() {
   const [orderList, setOrderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const itemsPerPage = 7;
 
-  useEffect(() => {
-    async function fetchData() {
+
+  async function fetchData() {
       const data = await fetchOrder();
       setOrderList(data);
-    }
+  }
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -24,6 +27,20 @@ export default function Orders() {
   const filteredOrders = orderList.filter((order) =>
     order.order_id?.toString().includes(search)
   );
+
+  async function handleDeleteOrder(e,id) {
+    e.preventDefault();
+    try {
+          const result = await delOrderById(id);
+          console.log("Order Delete:", result);
+          alert("Xóa Order thành công!");
+          fetchData();
+
+        } catch (error) {
+          console.error(error);
+          alert("Xóa Order thất bại!");
+        }
+  }
 
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -111,8 +128,8 @@ export default function Orders() {
                     key={order.order_id}
                     className="border-b hover:bg-gray-50 "
                   >
-                    <td className="px-10 py-10">{order.order_id}</td>
-                    <td className="px-10 py-10">{order.customer_id}</td>
+                    <td className="px-10 py-10"><Link to='/orderdetail'>{order.order_id}</Link></td>
+                    <td className="px-10 py-10">{order.full_name}</td>
                     <td className="px-10 py-10">
                       {new Date(order.order_date).toLocaleDateString()}
                     </td>
@@ -122,7 +139,10 @@ export default function Orders() {
                     <td className="px-10 py-10">{order.payment_method}</td>
                     <td className="px-10 py-10">{order.total_amount}</td>
                     <td className="px-10 py-10">
-                      <button className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm">
+                      <button
+                      type="button"
+                      onClick={(e) => handleDeleteOrder(e,order.order_id)}
+                      className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm">
                         DELETE
                       </button>
                     </td>

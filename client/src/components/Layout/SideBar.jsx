@@ -87,8 +87,8 @@ export default function Navbar() {
               <Link to="/orderdetail" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
                 <span className="m-5">Order Details</span>
               </Link>
-              <Link to="/addorder" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
-                <span className="m-5">Add Order</span>
+              <Link to="/createorder" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+                <span className="m-5">Create Order</span>
               </Link>
             </div>
           )}
