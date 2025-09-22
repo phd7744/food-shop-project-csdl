@@ -9,6 +9,7 @@ const foodRouter = require('./router/foods.js');
 const accountRouter = require('./router/account.js');
 const categoriesRouter = require('./router/categories.js');
 const orderRouter = require('./router/orders.js');
+const orderDetailRouter = require('./router/order-detail.js');
 const customerRouter = require('./router/customer.js');
 
 app.use('/foods',foodRouter);
@@ -16,6 +17,7 @@ app.use('/account',accountRouter);
 app.use('/category',categoriesRouter);
 app.use('/orders',orderRouter);
 app.use('/customers', customerRouter);
+app.use('/orderdetail', orderDetailRouter);
 
 
 

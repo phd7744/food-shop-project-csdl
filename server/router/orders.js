@@ -34,4 +34,14 @@ orderRoute.delete("/delorders/:id", (req, res) => {
   });
 });
 
+
+orderRoute.post("/addorder", (req, res) => {
+  const { customer_id, total } = req.body;
+  const query = `INSERT INTO orders (customer_id, status, total_amount) VALUES (?, 'pending', ?)`;
+  connection.query(query, [customer_id, total], (err, result) => {
+    if (err) return res.status(500).json({ error: "Insert order failed" });
+    return res.status(201).json({ order_id: result.insertId });
+  });
+});
+
 module.exports = orderRoute;

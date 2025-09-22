@@ -9,7 +9,17 @@ export async function fetchOrder() {
 export async function delOrderById(id) {
     const response = await fetch(`${API_URL}/delorders/${id}`, {
         method : 'DELETE',
-        headers : {'CONTENT-TYPE' : 'application/json'}
+        headers : {'Content-Type' : 'application/json'}
     })
     return await response.json();
+}
+
+export async function addOrder(data) {
+  const res = await fetch(`${API_URL}/addorder`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Lỗi khi thêm order");
+  return await res.json();
 }

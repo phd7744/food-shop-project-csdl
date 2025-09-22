@@ -1,0 +1,52 @@
+const express = require('express');
+const route = express.Router();
+const connection = require('../db.js')
+
+
+route.get('/:id',(req,res) => {
+    const {id} = req.params;
+    const querySelect = `SELECT * FROM order_details WHERE order_id = ?`;
+    connection.query(querySelect,[id], (err,result) => {
+        if(err) {
+            return res.status(500).json({err : "Fail"});
+        }
+
+        return res.status(201).json({result});
+    })
+})
+
+
+route.post('/addorderdetail', (req, res) => {
+    const { order_id, order_details } = req.body;
+
+    if (!order_id || !order_details || order_details.length === 0) {
+        return res.status(400).json({ error: 'Missing order_id or order_details' });
+    }
+
+    const query = `
+      INSERT INTO order_details (order_id, food_id, quantity, price, subtotal, note)
+      VALUES ?`;
+
+    const values = order_details.map(item => [
+        order_id,
+        item.id,
+        item.quantity,
+        item.price,
+        item.quantity * item.price, // subtotal
+        item.note || '' // note mặc định
+    ]);
+
+    console.log("Inserting values:", values);
+
+    connection.query(query, [values], (err, result) => {
+        if (err) {
+            console.error("Insert order details failed:", err);
+            return res.status(500).json({ error: err.sqlMessage }); // show lỗi SQL
+        }
+        return res.status(201).json({ message: 'Order details inserted', result });
+    });
+});
+
+
+
+module.exports = route;
