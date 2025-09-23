@@ -1,7 +1,6 @@
-const API_URL = 'http://localhost:3000/orderdetail';
+const API_URL = "http://localhost:3000/orderdetail";
 
 export async function addOrderDetails(orderId, details) {
-  console.log("Sending order details:", orderId, details); // debug
   const res = await fetch(`${API_URL}/addorderdetail`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -10,10 +9,15 @@ export async function addOrderDetails(orderId, details) {
 
   if (!res.ok) {
     const text = await res.text();
-    console.error("Response error:", text); // xem chi tiết lỗi từ server
+    console.error("Response error:", text);
     throw new Error("Lỗi khi thêm order details");
   }
 
   return await res.json();
 }
 
+export async function getOrderDetailById(id) {
+  const response = await fetch(`${API_URL}/${id}`);
+  const data = await response.json();
+  return data;
+}

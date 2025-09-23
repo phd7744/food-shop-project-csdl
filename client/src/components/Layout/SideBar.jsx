@@ -84,9 +84,9 @@ export default function Navbar() {
               >
                 <span className="m-5">List Order</span>
               </Link>
-              <Link to="/orderdetail" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
+              {/* <Link to={`/orderdetail/${or}`} className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
                 <span className="m-5">Order Details</span>
-              </Link>
+              </Link> */}
               <Link to="/createorder" className="flex items-center w-full h-10 rounded-xl hover:bg-gray-300">
                 <span className="m-5">Create Order</span>
               </Link>

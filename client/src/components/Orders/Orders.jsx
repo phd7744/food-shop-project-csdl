@@ -128,7 +128,7 @@ export default function Orders() {
                     key={order.order_id}
                     className="border-b hover:bg-gray-50 "
                   >
-                    <td className="px-10 py-10"><Link to='/orderdetail'>{order.order_id}</Link></td>
+                    <td className="px-10 py-10"><Link to={`/orderdetail/${order.order_id}`}>{order.order_id}</Link></td>
                     <td className="px-10 py-10">{order.full_name}</td>
                     <td className="px-10 py-10">
                       {new Date(order.order_date).toLocaleDateString()}
