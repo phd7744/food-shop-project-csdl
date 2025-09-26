@@ -74,11 +74,6 @@ export default function Customers() {
                 className="ml-2 flex-1 outline-none text-gray-700 placeholder-gray-400"
               />
             </div>
-
-            <button className="w-32 h-12 border rounded-xl border-gray-400 bg-white hover:bg-gray-100 flex items-center justify-center space-x-2">
-              <img src={downloadIcon} alt="Download Icon" className="w-6 h-6" />
-              <span className="text-gray-700 font-medium">Export</span>
-            </button>
           </div>
         </div>
 
