@@ -22,7 +22,7 @@ route.post("/addorderdetail", (req, res) => {
   const { order_id, order_details } = req.body;
 
   if (!order_id || !order_details || order_details.length === 0) {
-    return res.status(400).json({ error: "Missing order_id or order_details" });
+    return res.status(400).json({ error: "Fail" });
   }
 
   const query = `
@@ -43,7 +43,7 @@ route.post("/addorderdetail", (req, res) => {
   connection.query(query, [values], (err, result) => {
     if (err) {
       console.error("Insert order details failed:", err);
-      return res.status(500).json({ error: err.sqlMessage }); // show lỗi SQL
+      return res.status(500).json({ error: err.sqlMessage }); 
     }
     return res.status(201).json({ message: "Order details inserted", result });
   });

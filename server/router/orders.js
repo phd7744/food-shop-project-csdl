@@ -44,4 +44,120 @@ orderRoute.post("/addorder", (req, res) => {
   });
 });
 
+// API cập nhật trạng thái order
+orderRoute.put("/updatestatus/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  // Kiểm tra trạng thái hợp lệ
+  const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+
+  // Lấy trạng thái hiện tại để kiểm tra logic chuyển đổi
+  const getCurrentStatusQuery = `SELECT status FROM orders WHERE order_id = ?`;
+  
+  connection.query(getCurrentStatusQuery, [id], (err, result) => {
+    if (err) {
+      console.error("Get current status error:", err);
+      return res.status(500).json({ error: "Failed to get current status" });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const currentStatus = result[0].status;
+
+    // Kiểm tra logic chuyển đổi hợp lệ
+    let isValidTransition = false;
+    
+    if (currentStatus === 'pending') {
+      // Từ pending có thể chuyển sang confirmed hoặc cancelled
+      isValidTransition = status === 'confirmed' || status === 'cancelled';
+    } else if (currentStatus === 'confirmed') {
+      // Từ confirmed chỉ có thể chuyển sang completed
+      isValidTransition = status === 'completed';
+    }
+    // completed và cancelled không thể chuyển sang trạng thái khác
+
+    if (!isValidTransition) {
+      return res.status(400).json({ 
+        error: `Cannot change status from ${currentStatus} to ${status}` 
+      });
+    }
+
+    // Cập nhật trạng thái
+    const updateQuery = `UPDATE orders SET status = ? WHERE order_id = ?`;
+    
+    connection.query(updateQuery, [status, id], (updateErr, updateResult) => {
+      if (updateErr) {
+        console.error("Update status error:", updateErr);
+        return res.status(500).json({ error: "Failed to update status" });
+      }
+
+      console.log(`Order ${id} status updated from ${currentStatus} to ${status}`);
+      return res.status(200).json({ 
+        message: `Order status updated to ${status}`,
+        order_id: id,
+        old_status: currentStatus,
+        new_status: status
+      });
+    });
+  });
+});
+
+// API lấy thống kê cho Dashboard
+orderRoute.get("/dashboard/stats", (req, res) => {
+  const queries = {
+    totalOrders: `SELECT COUNT(*) as total FROM orders`,
+    totalRevenue: `SELECT SUM(total_amount) as revenue FROM orders WHERE status = 'completed'`,
+    totalCustomers: `SELECT COUNT(*) as total FROM customers`,
+    pendingOrders: `SELECT COUNT(*) as total FROM orders WHERE status = 'pending'`,
+    completedOrders: `SELECT COUNT(*) as total FROM orders WHERE status = 'completed'`,
+    cancelledOrders: `SELECT COUNT(*) as total FROM orders WHERE status = 'cancelled'`
+  };
+
+  const stats = {};
+  let completedQueries = 0;
+  const totalQueries = Object.keys(queries).length;
+
+  Object.entries(queries).forEach(([key, query]) => {
+    connection.query(query, (err, result) => {
+      if (err) {
+        console.error(`Error executing ${key} query:`, err);
+        stats[key] = 0;
+      } else {
+        stats[key] = result[0].total || result[0].revenue || 0;
+      }
+      
+      completedQueries++;
+      if (completedQueries === totalQueries) {
+        return res.status(200).json(stats);
+      }
+    });
+  });
+});
+
+// API lấy recent orders cho Dashboard (chỉ OrderID, Total Amount, Status)
+orderRoute.get("/dashboard/recent", (req, res) => {
+  const limit = req.query.limit || 10;
+  const recentOrdersQuery = `
+    SELECT order_id, total_amount, status 
+    FROM orders 
+    ORDER BY order_date DESC 
+    LIMIT ?
+  `;
+  
+  connection.query(recentOrdersQuery, [parseInt(limit)], (err, result) => {
+    if (err) {
+      console.error("Recent orders query error:", err);
+      return res.status(500).json({ error: "Failed to fetch recent orders" });
+    }
+    
+    return res.status(200).json(result);
+  });
+});
+
 module.exports = orderRoute;

@@ -112,7 +112,7 @@ export default function Menu() {
                   Created At
                 </th>
                 <th className="px-10 py-3 text-sm font-semibold text-gray-600">
-                  Action
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -130,7 +130,7 @@ export default function Menu() {
                         alt="Food Image"
                         className="w-16 h-16 object-contain bg-gray-100 rounded"
                       />
-                      <Link to={`/fooddetail/${food.food_id}`}>{food.name}</Link>
+                      <span className="font-medium">{food.name}</span>
                     </td>
                     <td className="px-10 py-10">{food.category_name}</td>
                     <td className="px-10 py-10">{food.price}</td>
@@ -145,12 +145,20 @@ export default function Menu() {
                       {new Date(food.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-10 py-10">
-                      <button
-                        onClick={(e) => handleDeleteFood(e, food.food_id)}
-                        className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm"
-                      >
-                        DELETE
-                      </button>
+                      <div className="flex space-x-2">
+                        <Link
+                          to={`/fooddetail/${food.food_id}`}
+                          className="bg-blue-500 hover:bg-blue-600 px-3 py-1 text-white text-xs rounded"
+                        >
+                          View Detail
+                        </Link>
+                        <button
+                          onClick={(e) => handleDeleteFood(e, food.food_id)}
+                          className="bg-red-500 hover:bg-red-700 px-3 py-1 text-white text-xs rounded"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

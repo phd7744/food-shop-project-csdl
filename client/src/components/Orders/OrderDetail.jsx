@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getOrderDetailById } from "../../api/orderDetailApi";
+import { updateOrderStatus } from "../../api/orderApi";
 
 export default function OrderDetail() {
   const { id } = useParams();
   const [orderDetail, setOrderDetail] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -17,27 +19,70 @@ export default function OrderDetail() {
     fetchData();
   }, [id]);
 
+  const handleStatusUpdate = async (newStatus) => {
+    try {
+      setUpdating(true);
+      await updateOrderStatus(id, newStatus);
+      const updatedData = await getOrderDetailById(id);
+      setOrderDetail(updatedData);
+      alert(`Order status updated to ${newStatus} successfully!`);
+    } catch (error) {
+      alert(`Error updating status: ${error.message}`);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const subTotal = orderDetail.reduce((sum, item) => sum + item.subtotal, 0);
   const vat = subTotal * 0.1;
   const total = subTotal + vat;
 
   if (loading) return <p>Loading...</p>;
+  
+  const currentStatus = orderDetail[0]?.status;
+  
   let statusStyle;
-  if (orderDetail[0]?.status === "pending") {
+  if (currentStatus === "pending") {
     statusStyle = "text-orange-700";
-  } else if (orderDetail[0]?.status === "confirmed") {
+  } else if (currentStatus === "confirmed") {
     statusStyle = "text-green-700";
-  } else if (orderDetail[0]?.status === "completed") {
+  } else if (currentStatus === "completed") {
     statusStyle = "text-green-700";
-  } else {
+  } else if (currentStatus === "cancelled") {
     statusStyle = "text-red-700";
+  } else {
+    statusStyle = "text-gray-700";
   }
-  let statusButton;
-  if (orderDetail[0]?.status === "pending") {
-    statusButton = "Confirmed";
-  } else if (orderDetail[0]?.status === "confirmed") {
-    statusButton = "Completed";
-  } 
+  
+  const getButtonConfig = () => {
+    if (currentStatus === "pending") {
+      return {
+        primaryText: "Confirm",
+        primaryAction: () => handleStatusUpdate("confirmed"),
+        primaryDisabled: false,
+        showCancel: true,
+        cancelDisabled: false
+      };
+    } else if (currentStatus === "confirmed") {
+      return {
+        primaryText: "Complete",
+        primaryAction: () => handleStatusUpdate("completed"),
+        primaryDisabled: false,
+        showCancel: true,
+        cancelDisabled: true
+      };
+    } else {
+      return {
+        primaryText: "No Action",
+        primaryAction: null,
+        primaryDisabled: true,
+        showCancel: true,
+        cancelDisabled: true
+      };
+    }
+  };
+
+  const buttonConfig = getButtonConfig(); 
   return (
     <section className="space-y-6">
       <div className="flex">
@@ -61,12 +106,34 @@ export default function OrderDetail() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="w-32 h-12 border rounded-xl border-gray-400 bg-white hover:bg-gray-100 flex items-center justify-center space-x-2">
-              <span className="text-gray-700 font-medium">Cancel</span>
-            </button>
+            {buttonConfig.showCancel && (
+              <button 
+                onClick={() => handleStatusUpdate("cancelled")}
+                disabled={buttonConfig.cancelDisabled || updating}
+                className={`w-32 h-12 border rounded-xl border-gray-400 flex items-center justify-center space-x-2 ${
+                  buttonConfig.cancelDisabled || updating 
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                    : 'bg-white hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                <span className="font-medium">
+                  {updating ? "..." : "Cancel"}
+                </span>
+              </button>
+            )}
 
-            <button className="w-32 h-12 border rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-2">
-              <span className="text-white">{statusButton}</span>
+            <button 
+              onClick={buttonConfig.primaryAction}
+              disabled={buttonConfig.primaryDisabled || updating || !buttonConfig.primaryAction}
+              className={`w-32 h-12 border rounded-xl flex items-center justify-center space-x-2 ${
+                buttonConfig.primaryDisabled || updating || !buttonConfig.primaryAction
+                  ? 'bg-gray-400 border-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 border-blue-600 text-white'
+              }`}
+            >
+              <span>
+                {updating ? "Updating..." : buttonConfig.primaryText}
+              </span>
             </button>
           </div>
         </div>

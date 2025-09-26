@@ -2,18 +2,22 @@ import { useEffect, useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import downloadIcon from "../../assets/img_menu/download.png";
 import searchIcon from "../../assets/img_navbar/loupe.png";
-import { delOrderById, fetchOrder } from "../../api/orderApi";
+import {
+  delOrderById,
+  fetchOrder,
+  updateOrderStatus,
+} from "../../api/orderApi";
 import { Link } from "react-router-dom";
 export default function Orders() {
   const [orderList, setOrderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [updating, setUpdating] = useState({});
   const itemsPerPage = 7;
 
-
   async function fetchData() {
-      const data = await fetchOrder();
-      setOrderList(data);
+    const data = await fetchOrder();
+    setOrderList(data);
   }
 
   useEffect(() => {
@@ -28,19 +32,63 @@ export default function Orders() {
     order.order_id?.toString().includes(search)
   );
 
-  async function handleDeleteOrder(e,id) {
+  async function handleDeleteOrder(e, id) {
     e.preventDefault();
     try {
-          const result = await delOrderById(id);
-          console.log("Order Delete:", result);
-          alert("Xóa Order thành công!");
-          fetchData();
-
-        } catch (error) {
-          console.error(error);
-          alert("Xóa Order thất bại!");
-        }
+      const result = await delOrderById(id);
+      console.log("Order Delete:", result);
+      alert("Xóa Order thành công!");
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      alert("Xóa Order thất bại!");
+    }
   }
+
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      setUpdating((prev) => ({ ...prev, [orderId]: true }));
+      await updateOrderStatus(orderId, newStatus);
+      await fetchData();
+
+      alert(`Order #${orderId} status updated to ${newStatus} successfully!`);
+    } catch (error) {
+      alert(`Error updating status: ${error.message}`);
+    } finally {
+      setUpdating((prev) => ({ ...prev, [orderId]: false }));
+    }
+  };
+
+  const getOrderButtonConfig = (order) => {
+    const isUpdating = updating[order.order_id];
+    const status = order.status;
+
+    if (status === "pending") {
+      return {
+        primaryText: "Confirm",
+        primaryAction: () => handleStatusUpdate(order.order_id, "confirmed"),
+        primaryDisabled: isUpdating,
+        showCancel: true,
+        cancelDisabled: isUpdating,
+      };
+    } else if (status === "confirmed") {
+      return {
+        primaryText: "Complete",
+        primaryAction: () => handleStatusUpdate(order.order_id, "completed"),
+        primaryDisabled: isUpdating,
+        showCancel: false,
+        cancelDisabled: true,
+      };
+    } else {
+      return {
+        primaryText: "No Action",
+        primaryAction: null,
+        primaryDisabled: true,
+        showCancel: false,
+        cancelDisabled: true,
+      };
+    }
+  };
 
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -107,6 +155,9 @@ export default function Orders() {
                   Total Amount
                 </th>
                 <th className="px-10 py-3 text-sm font-semibold text-gray-600">
+                  Status Actions
+                </th>
+                <th className="px-10 py-3 text-sm font-semibold text-gray-600">
                   Action
                 </th>
               </tr>
@@ -120,31 +171,93 @@ export default function Orders() {
                   statusStyle = "text-green-700";
                 } else if (order.status === "completed") {
                   statusStyle = "text-green-700";
-                } else{
+                } else {
                   statusStyle = "text-red-700";
                 }
+
+                const buttonConfig = getOrderButtonConfig(order);
+                const isUpdating = updating[order.order_id];
+
                 return (
                   <tr
                     key={order.order_id}
                     className="border-b hover:bg-gray-50 "
                   >
-                    <td className="px-10 py-10"><Link to={`/orderdetail/${order.order_id}`}>{order.order_id}</Link></td>
+                    <td className="px-10 py-10 font-medium">
+                      #{order.order_id}
+                    </td>
                     <td className="px-10 py-10">{order.full_name}</td>
                     <td className="px-10 py-10">
                       {new Date(order.order_date).toLocaleDateString()}
                     </td>
                     <td className="px-10 py-10">
-                      <span className={`bg-gray-200 px-3 py-1 rounded-xl text-xs font-medium ${statusStyle}`}>{order.status}</span>
+                      <span
+                        className={`bg-gray-200 px-3 py-1 rounded-xl text-xs font-medium ${statusStyle}`}
+                      >
+                        {order.status}
+                      </span>
                     </td>
                     <td className="px-10 py-10">{order.payment_method}</td>
-                    <td className="px-10 py-10">{order.total_amount}</td>
+                    <td className="px-10 py-10">$ {order.total_amount}</td>
                     <td className="px-10 py-10">
-                      <button
-                      type="button"
-                      onClick={(e) => handleDeleteOrder(e,order.order_id)}
-                      className="bg-red-500 hover:bg-red-700 w-16 h-8 text-white text-sm rounded-sm">
-                        DELETE
-                      </button>
+                      <div className="flex space-x-2">
+                        {buttonConfig.showCancel && (
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(order.order_id, "cancelled")
+                            }
+                            disabled={buttonConfig.cancelDisabled}
+                            className={`px-3 py-1 text-xs rounded ${
+                              buttonConfig.cancelDisabled || isUpdating
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-red-100 text-red-700 hover:bg-red-200"
+                            }`}
+                          >
+                            {isUpdating ? "..." : "Cancel"}
+                          </button>
+                        )}
+
+                        <button
+                          onClick={buttonConfig.primaryAction}
+                          disabled={
+                            buttonConfig.primaryDisabled ||
+                            !buttonConfig.primaryAction
+                          }
+                          className={`px-3 py-1 text-xs rounded ${
+                            buttonConfig.primaryDisabled ||
+                            !buttonConfig.primaryAction ||
+                            isUpdating
+                              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          }`}
+                        >
+                          {isUpdating
+                            ? "Updating..."
+                            : buttonConfig.primaryText}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-10 py-10 ">
+                      <div className="flex space-x-2">
+                        <Link
+                          to={`/orderdetail/${order.order_id}`}
+                          className="bg-blue-500 hover:bg-blue-600 px-3 py-1 text-white text-xs rounded inline-block"
+                        >
+                          View Detail
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteOrder(e, order.order_id)}
+                          disabled={isUpdating}
+                          className={`w-16 h-8 text-xs rounded-sm ${
+                            isUpdating
+                              ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                              : "bg-red-500 hover:bg-red-700 text-white"
+                          }`}
+                        >
+                          DELETE
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
