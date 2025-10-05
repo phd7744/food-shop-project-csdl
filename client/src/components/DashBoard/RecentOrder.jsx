@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchRecentOrders } from "../../api/orderApi";
+import { fetchRecentOrders } from "../../api/dashboardApi";
 import { Link } from "react-router-dom";
 
 export default function RecentOrder() {
@@ -83,7 +83,7 @@ export default function RecentOrder() {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-center font-medium">
-                    ${(order.total_amount || 0).toFixed(2)}
+                    ${(order.total_amount || 0)}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span 

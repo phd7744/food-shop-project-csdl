@@ -114,7 +114,7 @@ export default function Menu() {
             <tbody>
               {currentFoods.map((food) => {
                 const statusStyle =
-                  food.is_available === 1 ? "text-red-700" : "text-green-700";
+                  food.is_available === 1 ? "text-green-700" : "text-red-700" ;
                 const statusText =
                   food.is_available === 1 ? "In Stock" : "Out Of Stock";
                 return (

@@ -1,29 +1,59 @@
 import userLoginIcon from "../../assets/img_navbar/user-login.png";
 import passwordIcon from "../../assets/img_navbar/padlock.png";
 import loginIcon from "../../assets/img_navbar/login.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  async function handleLogin() {
-    const reponse = await fetch(`http://localhost:3000/account`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: userName, password: password }),
-    });
-
-    if (reponse.ok) {
-      console.log("Login Success");
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (isLoggedIn === 'true') {
       navigate("/");
+    }
+  }, [navigate]);
 
-    } else {
-      console.log("Login Fail");
+  async function handleLogin() {
+    if (!userName.trim() || !password.trim()) {
+      setError("Please enter both username and password");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`http://localhost:3000/account`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: userName, password: password }),
+      });
+
+      if (response.ok) {
+        console.log("Login Success");
+        
+        // Lưu trạng thái đăng nhập vào localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', userName);
+        
+        navigate("/");
+      } else {
+        setError("Invalid username or password");
+        console.log("Login Fail");
+      }
+    } catch (error) {
+      setError("Login failed. Please try again.");
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -71,12 +101,22 @@ export default function Login() {
             />
           </div>
         </div>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-xl text-sm">
+            {error}
+          </div>
+        )}
         <button
           type="button"
           onClick={() => handleLogin()}
-          className="w-full bg-black text-white py-2 rounded-xl hover:bg-gray-800 transition"
+          disabled={loading}
+          className={`w-full py-2 rounded-xl transition ${
+            loading 
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+              : 'bg-black text-white hover:bg-gray-800'
+          }`}
         >
-          LOGIN
+          {loading ? 'LOGGING IN...' : 'LOGIN'}
         </button>
       </div>
     </div>

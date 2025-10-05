@@ -4,7 +4,7 @@ import customersIcon from "../../assets/img_navbar/group.png";
 import foodIcon from "../../assets/img_navbar/dish.png";
 import orderIcon from "../../assets/img_navbar/order-delivery.png";
 import RecentOrder from "./RecentOrder";
-import { fetchDashboardStats } from "../../api/orderApi";
+import { fetchDashboardStats } from "../../api/dashboardApi";
 
 export default function DashBoard() {
   const [stats, setStats] = useState({
@@ -51,7 +51,7 @@ export default function DashBoard() {
     },
     { 
       icon: foodIcon, 
-      value: loading ? "..." : `$${(stats.totalRevenue || 0).toFixed(2)}`, 
+      value: loading ? "..." : `$${(stats.totalRevenue || 0)}`, 
       title: "REVENUE" 
     },
   ];
@@ -97,7 +97,7 @@ export default function DashBoard() {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Revenue Overview</h3>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-600">
-              ${loading ? "..." : (stats.totalRevenue || 0).toFixed(2)}
+              ${loading ? "..." : (stats.totalRevenue || 0)}
             </div>
             <p className="text-gray-500 text-sm mt-2">Total Revenue from Completed Orders</p>
           </div>
